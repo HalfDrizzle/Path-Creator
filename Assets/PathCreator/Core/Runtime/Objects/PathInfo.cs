@@ -4,7 +4,7 @@ using Sirenix.OdinInspector;
 namespace PathCreation
 {
     [Serializable]
-    public class PathActionArea
+    public class PathInfo
     {
         [ReadOnly]
         public int BezierIndex;

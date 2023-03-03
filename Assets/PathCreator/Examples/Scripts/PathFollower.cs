@@ -27,7 +27,7 @@ namespace PathCreation.Examples
             if (pathCreator == null) return;
             if (Waitting) 
                 return;
-            foreach (var path in pathCreator.ActionArea)
+            foreach (var path in pathCreator.PathInfos)
             {
                 if (WattingPathPointIndex == path.BezierIndex)
                 {

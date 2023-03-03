@@ -44,47 +44,49 @@ namespace PathCreation {
         }
 
         [ShowInInspector]
-        public List<PathActionArea> ActionArea;
-        
+        public List<PathInfo> PathInfos;
+
+#if UNITY_EDITOR
+
         [ShowIf("@EditorActionArea.BezierIndex % 3 == 0")]
-        public PathActionArea EditorActionArea;
+        public PathInfo EditorInfo;
 
         
-        [ShowIf("GetAction")]
+        [ShowIf("TryGetPathInfo")]
         [Button("增加新路径数据")]
-        public void AddNewArea()
+        public void AddPathInfo()
         {
-            SetActionArea(EditorActionArea);
+            SetActionArea(EditorInfo);
         }
 
         public void GetActionArea(int index)
         {
-            foreach (var pathActionArea in ActionArea)
+            foreach (var pathActionArea in PathInfos)
             {
                 if (pathActionArea.BezierIndex == index)
                 {
-                    EditorActionArea = pathActionArea;
+                    EditorInfo = pathActionArea;
                     return;
                 }
             }
 
-            EditorActionArea = new PathActionArea
+            EditorInfo = new PathInfo
             {
                 BezierIndex = index
             };
         }
 
-        public bool GetAction()
+        public bool TryGetPathInfo()
         {
-            foreach (var pathActionArea in ActionArea)
+            foreach (var pathActionArea in PathInfos)
             {
-                if (pathActionArea.BezierIndex == EditorActionArea.BezierIndex)
+                if (pathActionArea.BezierIndex == EditorInfo.BezierIndex)
                 {
                     return false;
                 }
             }
 
-            if (EditorActionArea.BezierIndex % 3 != 0)
+            if (EditorInfo.BezierIndex % 3 != 0)
             {
                 return false;
             }
@@ -92,20 +94,21 @@ namespace PathCreation {
             return true;
         }
         
-        public void SetActionArea(PathActionArea info)
+        public void SetActionArea(PathInfo info)
         {
-            for (var index = 0; index < ActionArea.Count; index++)
+            for (var index = 0; index < PathInfos.Count; index++)
             {
-                var pathActionArea = ActionArea[index];
+                var pathActionArea = PathInfos[index];
                 if (pathActionArea.BezierIndex == info.BezierIndex)
                 {
-                    ActionArea[index] = info;
+                    PathInfos[index] = info;
                     return;
                 }
             }
-            ActionArea.Add(info);
+            PathInfos.Add(info);
         }
-
+#endif
+        
         #region Internal methods
 
         /// Used by the path editor to initialise some data
@@ -170,7 +173,7 @@ namespace PathCreation {
             }
             else
             {
-                foreach (var path in ActionArea)
+                foreach (var path in PathInfos)
                 {
                     Gizmos.color = Color.gray;
                         
