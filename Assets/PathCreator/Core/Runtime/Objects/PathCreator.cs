@@ -48,7 +48,7 @@ namespace PathCreation {
 
 #if UNITY_EDITOR
 
-        [ShowIf("@EditorActionArea.BezierIndex % 3 == 0")]
+        [ShowIf("@EditorInfo.BezierIndex % 3 == 0")]
         public PathInfo EditorInfo;
 
         
