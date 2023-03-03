@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace PathCreation {
@@ -40,6 +41,69 @@ namespace PathCreation {
                 }
                 editorData.bezierPath = value;
             }
+        }
+
+        [ShowInInspector]
+        public List<PathActionArea> ActionArea;
+        
+        [ShowIf("@EditorActionArea.BezierIndex % 3 == 0")]
+        public PathActionArea EditorActionArea;
+
+        
+        [ShowIf("GetAction")]
+        [Button("增加新路径数据")]
+        public void AddNewArea()
+        {
+            SetActionArea(EditorActionArea);
+        }
+
+        public void GetActionArea(int index)
+        {
+            foreach (var pathActionArea in ActionArea)
+            {
+                if (pathActionArea.BezierIndex == index)
+                {
+                    EditorActionArea = pathActionArea;
+                    return;
+                }
+            }
+
+            EditorActionArea = new PathActionArea
+            {
+                BezierIndex = index
+            };
+        }
+
+        public bool GetAction()
+        {
+            foreach (var pathActionArea in ActionArea)
+            {
+                if (pathActionArea.BezierIndex == EditorActionArea.BezierIndex)
+                {
+                    return false;
+                }
+            }
+
+            if (EditorActionArea.BezierIndex % 3 != 0)
+            {
+                return false;
+            }
+
+            return true;
+        }
+        
+        public void SetActionArea(PathActionArea info)
+        {
+            for (var index = 0; index < ActionArea.Count; index++)
+            {
+                var pathActionArea = ActionArea[index];
+                if (pathActionArea.BezierIndex == info.BezierIndex)
+                {
+                    ActionArea[index] = info;
+                    return;
+                }
+            }
+            ActionArea.Add(info);
         }
 
         #region Internal methods
@@ -102,6 +166,15 @@ namespace PathCreation {
                             Gizmos.DrawLine (path.GetPoint (i), path.GetPoint (nextI));
                         }
                     }
+                }
+            }
+            else
+            {
+                foreach (var path in ActionArea)
+                {
+                    Gizmos.color = Color.gray;
+                        
+                    Gizmos.DrawWireSphere(bezierPath.GetPoint(path.BezierIndex),path.ActionRadius);
                 }
             }
         }

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 namespace PathCreation.Examples
 {
@@ -11,6 +12,8 @@ namespace PathCreation.Examples
         public float speed = 5;
         float distanceTravelled;
 
+        private bool Waitting;
+        private int WattingPathPointIndex = -1;
         void Start() {
             if (pathCreator != null)
             {
@@ -21,12 +24,34 @@ namespace PathCreation.Examples
 
         void Update()
         {
-            if (pathCreator != null)
+            if (pathCreator == null) return;
+            if (Waitting) 
+                return;
+            foreach (var path in pathCreator.ActionArea)
             {
-                distanceTravelled += speed * Time.deltaTime;
-                transform.position = pathCreator.path.GetPointAtDistance(distanceTravelled, endOfPathInstruction);
-                transform.rotation = pathCreator.path.GetRotationAtDistance(distanceTravelled, endOfPathInstruction);
+                if (WattingPathPointIndex == path.BezierIndex)
+                {
+                    continue;
+                }
+                if (Vector3.Distance(pathCreator.bezierPath.GetPoint(path.BezierIndex), transform.position) < path.ActionRadius)
+                {
+                    Waitting = true;
+
+                    WattingPathPointIndex = path.BezierIndex;
+                    var t = Wait(path.WaitingTime);
+                    StartCoroutine(t);
+                    return;
+                }
             }
+            distanceTravelled += speed * Time.deltaTime;         
+            transform.position = pathCreator.path.GetPointAtDistance(distanceTravelled, endOfPathInstruction);
+            transform.rotation = pathCreator.path.GetRotationAtDistance(distanceTravelled, endOfPathInstruction);
+        }
+
+        IEnumerator Wait(float time)
+        {
+            yield return new WaitForSeconds(time);
+            Waitting = false;
         }
 
         // If the path changes during the game, update the distance travelled so that the follower's position on the new path

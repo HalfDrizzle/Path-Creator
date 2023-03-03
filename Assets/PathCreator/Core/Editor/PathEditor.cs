@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using PathCreation;
 using PathCreation.Utility;
+using Sirenix.OdinInspector.Editor;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
@@ -10,7 +11,7 @@ namespace PathCreationEditor
 	/// Editor class for the creation of Bezier and Vertex paths
 
 	[CustomEditor(typeof(PathCreator))]
-	public class PathEditor : Editor
+	public class PathEditor : OdinEditor
 	{
 
 		#region Fields
@@ -48,7 +49,12 @@ namespace PathCreationEditor
 		int selectedSegmentIndex;
 		int draggingHandleIndex;
 		int mouseOverHandleIndex;
-		int handleIndexToDisplayAsTransform;
+
+		private int handleIndexToDisplayAsTransform
+		{
+			get => _HandleIndexToDisplayAsTransform;
+			set => _HandleIndexToDisplayAsTransform = value;
+		}
 
 		bool shiftLastFrame;
 		bool hasUpdatedScreenSpaceLine;
@@ -60,6 +66,8 @@ namespace PathCreationEditor
 		Quaternion transformRot;
 
 		Color handlesStartCol;
+		
+		[SerializeField] private int _HandleIndexToDisplayAsTransform;
 
 		// Constants
 		const int bezierPathTab = 0;
@@ -104,6 +112,9 @@ namespace PathCreationEditor
 			{
 				data.PathModifiedByUndo();
 			}
+			
+			DrawUnityInspector();
+			DrawDefaultInspector();
 		}
 
 		void DrawBezierPathInspector()
@@ -158,6 +169,8 @@ namespace PathCreationEditor
 									creator.bezierPath.SetAnchorNormalAngle(anchorIndex, newAngle);
 								}
 							}
+
+							creator.GetActionArea(handleIndexToDisplayAsTransform);
 						}
 					}
 
@@ -873,6 +886,10 @@ namespace PathCreationEditor
 
 		#endregion
 
+		public int GetHandleIndex()
+		{
+			return handleIndexToDisplayAsTransform;
+		}
 	}
 
 }
